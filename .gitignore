@@ -10,4 +10,4 @@ build/
 dist/
 
 # Volúmenes locales de datos
-postgres_data/
+postgres_data/*.tsbuildinfo
