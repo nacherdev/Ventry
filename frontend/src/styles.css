@@ -1,0 +1,36 @@
+:root {
+  --bg: #f4f6f8; --card: #fff; --text: #1b2530; --muted: #5b6875;
+  --ok: #1f8a4c; --ok-bg: #e6f4ec; --fail: #c0392b; --fail-bg: #fbeaea;
+  --pending: #9aa5b1; --border: #dde3e9;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  color: var(--text); background: var(--bg);
+}
+* { box-sizing: border-box; }
+body { margin: 0; }
+.app { max-width: 880px; margin: 0 auto; padding: 32px 16px 48px; }
+header h1 { margin: 0; font-size: 2rem; letter-spacing: -0.02em; }
+header p { margin: 4px 0 24px; color: var(--muted); }
+.panel { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+.panel h2 { margin: 0 0 16px; font-size: 1.1rem; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+.status-card { display: flex; gap: 12px; align-items: flex-start; padding: 14px; border-radius: 10px; border: 1px solid var(--border); }
+.status-card .dot { width: 14px; height: 14px; border-radius: 50%; margin-top: 4px; flex: none; background: var(--pending); }
+.status-card.ok { background: var(--ok-bg); border-color: var(--ok); }
+.status-card.ok .dot { background: var(--ok); box-shadow: 0 0 0 4px rgba(31,138,76,.2); }
+.status-card.fail { background: var(--fail-bg); border-color: var(--fail); }
+.status-card.fail .dot { background: var(--fail); }
+.status-card .label { margin: 0; font-weight: 600; }
+.status-card .detail { margin: 2px 0 0; color: var(--muted); font-size: .9rem; }
+.json { margin: 16px 0 0; padding: 12px; background: #0f1720; color: #d6e2ee; border-radius: 8px; font-size: .85rem; overflow-x: auto; }
+.search { width: 100%; min-height: 48px; padding: 10px 14px; font-size: 1rem; border: 1px solid var(--border); border-radius: 8px; }
+.search:focus { outline: 2px solid #2d6cdf; outline-offset: 1px; }
+.muted { color: var(--muted); } .error { color: var(--fail); }
+.alumnos { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 8px; }
+.alumno { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 10px; border: 1px solid var(--border); min-height: 56px; }
+.alumno .luz { width: 18px; height: 18px; border-radius: 50%; flex: none; }
+.alumno.verde .luz { background: var(--ok); } .alumno.rojo .luz { background: var(--fail); }
+.alumno .info { display: flex; flex-direction: column; flex: 1; }
+.alumno .info span { color: var(--muted); font-size: .9rem; }
+.alumno .badge { font-size: .8rem; font-weight: 600; padding: 4px 10px; border-radius: 999px; }
+.alumno.verde .badge { background: var(--ok-bg); color: var(--ok); }
+.alumno.rojo .badge { background: var(--fail-bg); color: var(--fail); }

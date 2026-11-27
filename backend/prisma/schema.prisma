@@ -1,0 +1,38 @@
+// Esquema Prisma de Ventry (PoC). Solo contiene las tablas mínimas para
+// validar la conectividad Backend <-> Base de Datos.
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/// Tabla de verificación del Walking Skeleton.
+model SystemStatus {
+  id        Int      @id @default(autoincrement())
+  message   String   @db.VarChar(120)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("system_status")
+}
+
+/// Versión reducida de la entidad Alumno (RF-05 / RF-06).
+model Alumno {
+  id              Int      @id @default(autoincrement())
+  nia             String   @unique @db.VarChar(20)
+  dni             String?  @unique @db.VarChar(12)
+  nombre          String   @db.VarChar(80)
+  apellidos       String   @db.VarChar(120)
+  curso           String   @db.VarChar(40)
+  fechaNacimiento DateTime @map("fecha_nacimiento") @db.Date
+  qrToken         String   @unique @default(uuid()) @map("qr_token") @db.Uuid
+  activo          Boolean  @default(true)
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  @@index([apellidos, nombre])
+  @@map("alumnos")
+}

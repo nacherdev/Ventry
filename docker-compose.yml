@@ -1,33 +1,64 @@
-version: '3.8'
+# Ventry · Walking Skeleton (PoC Sesión 8)
+# Levanta: database (PostgreSQL) -> backend (Express + Prisma) -> frontend (React + Nginx)
+# Uso: cp .env.example .env && docker compose up --build
+
 services:
-  # Servicio de Base de Datos
+  # Capa 3 · Persistencia
   database:
-    image: postgres:15-alpine
-    container_name: daw_postgres_db
-    restart: always
+    image: postgres:16-alpine
+    container_name: ventry_db
+    restart: unless-stopped
     environment:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_NAME}
     ports:
-      - "5432:5432"
+      - "127.0.0.1:5432:5432"   # solo accesible desde la máquina local (pgAdmin/DBeaver)
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    networks:
+      - ventry-net
 
-  # Servicio Backend
+  # Capa 2 · Lógica de negocio
   backend:
     build:
       context: ./backend
-      dockerfile: Dockerfile
-    container_name: daw_backend_api
-    restart: always
-    ports:
-      - "3000:3000"
+    container_name: ventry_api
+    restart: unless-stopped
     environment:
       PORT: 3000
-      DATABASE_URL: postgres://${DB_USER}:${DB_PASSWORD}@database:5432/${DB_NAME}
+      NODE_ENV: production
+      DATABASE_URL: postgresql://${DB_USER}:${DB_PASSWORD}@database:5432/${DB_NAME}?schema=public
+      CORS_ORIGIN: http://localhost:${FRONTEND_PORT:-8080}
+    ports:
+      - "127.0.0.1:3000:3000"   # acceso directo a la API para depuración (Postman/curl)
     depends_on:
-      - database
+      database:
+        condition: service_healthy
+    networks:
+      - ventry-net
+
+  # Capa 1 · Presentación (+ proxy inverso de la Capa 4)
+  frontend:
+    build:
+      context: ./frontend
+    container_name: ventry_web
+    restart: unless-stopped
+    ports:
+      - "${FRONTEND_PORT:-8080}:80"
+    depends_on:
+      - backend
+    networks:
+      - ventry-net
+
+networks:
+  ventry-net:
+    driver: bridge
 
 volumes:
   postgres_data:
